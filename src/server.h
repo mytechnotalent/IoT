@@ -140,7 +140,7 @@ void handle_ssl_connection(SSL *ssl, char *buffer);
  *         characters with their corresponding ASCII values. The decoded string
  *         replaces the original input string.
  *
- * @param  str: The string to be URL-decoded
+ * @param  str: The string to be URL-decoded.
  */
 void url_decode(char *str);
 
