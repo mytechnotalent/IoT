@@ -1,4 +1,4 @@
-![image](https://github.com/mytechnotalent/rp5-proj/blob/main/rp5-proj.png?raw=true)
+<img src="https://github.com/mytechnotalent/IoT/blob/main/IoT.png?raw=true" width="400">
 
 ## FREE Reverse Engineering Self-Study Course [HERE](https://github.com/mytechnotalent/Reverse-Engineering-Tutorial)
 
