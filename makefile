@@ -47,5 +47,5 @@ clean:
 
 dumpcap:
 	touch capture.pcap
-	dumpcap -i any -w capture.pcap
+	dumpcap -i wlan0 -w capture.pcap
 
