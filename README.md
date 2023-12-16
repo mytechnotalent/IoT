@@ -27,7 +27,7 @@ sudo ./build_openocd.sh
 
 <br>
 
-# Usage Terminal 1
+# Usage: Terminal 1
 ```bash
 export WIFI_SSID="<YOUR_WIFI_SSID>" WIFI_PASSWORD="<YOUR_WIFI_PASSWORD>"
 sudo nmcli device disconnect wlan0
@@ -40,12 +40,12 @@ sudo make flash-client
 sudo make run-server
 ```
 
-# Usage Terminal 2
+# Usage: Terminal 2
 ```bash
 make open-terminal
 ```
 
-# `main.c` within `TLS_client` Folder
+# `client_instance.c` within `TLS_client` Folder
 ```c
 
 /**
