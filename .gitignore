@@ -57,9 +57,11 @@ dkms.conf
 # build dir
 /build/
 
-# Makefiles
+# Makefile
 **/Makefile
+
+# makefile
+**/makefile
 
 # pico-sdk
 **/pico-sdk
-
