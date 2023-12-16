@@ -54,20 +54,9 @@ dkms.conf
 # ssl dir
 /ssl/
 
-# build dir
+# server build dir
 /build/
 
-# pico-sdk
-TLS_client/pico-sdk
+# client build dir
+TLS_client/
 
-# CMakeFiles
-TLS_client/CMakeFiles
-
-# CMakeFiles
-TLS_client/pioasm
-
-# generated
-TLS_client/generated
-
-# elf2uf2
-TLS_client/elf2uf2

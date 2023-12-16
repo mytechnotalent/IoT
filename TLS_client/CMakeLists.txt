@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.13)
 
 set(PICO_BOARD pico_w)
+set(PICO_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../pico-sdk)
 
-include(pico_sdk_import.cmake)
+include(${PICO_SDK_PATH}/pico_sdk_init.cmake)
 
 project(IoT C CXX ASM)
 set(CMAKE_C_STANDARD 11)
