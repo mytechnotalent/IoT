@@ -58,5 +58,5 @@ dkms.conf
 /build/
 
 # client build dir
-TLS_client/
+TLS_client/build
 
