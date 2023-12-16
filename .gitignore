@@ -57,11 +57,8 @@ dkms.conf
 # build dir
 /build/
 
-# Makefile
-**/Makefile
-
-# makefile
-**/makefile
-
 # pico-sdk
-**/pico-sdk
+TLS_client/pico-sdk
+
+# CMakeFiles
+TLS_client/CMakeFiles
