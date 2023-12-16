@@ -62,22 +62,18 @@ int main(void) {
     }
     cyw43_arch_enable_sta_mode();
 
-    // printf("WIFI_SSID: %s\r\n", WIFI_SSID);
-    // printf("WIFI_PASSWORD: %s\r\n", WIFI_PASSWORD);
     if (pico_error_code = cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
         printf("Failed to connect: %d\r\n", pico_error_code);
         return 1;
     }
     bool pass = run_tls_client_test(NULL, 0, TLS_CLIENT_SERVER, TLS_CLIENT_HTTP_REQUEST, TLS_CLIENT_TIMEOUT_SECS);
-    if (pass) {
+    if (pass)
         printf("Test passed.\r\n");
-    } else {
+    else
         printf("Test failed.\r\n");
-    }
     // sleep a bit to let usb stdio write out any buffer to host
     sleep_ms(100);
     cyw43_arch_deinit();
     printf("All done...\r\n");
     return pass ? 0 : 1;
 }
-
