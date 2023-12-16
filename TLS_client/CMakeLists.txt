@@ -35,8 +35,8 @@ set(WIFI_SSID "${WIFI_SSID}" CACHE INTERNAL "WiFi SSID")
 set(WIFI_PASSWORD "${WIFI_PASSWORD}" CACHE INTERNAL "WiFi PASSWORD")
 
 add_executable(IoT
-        main.c
-        tls_common.c
+        src/client.c
+        src/client_instance.c
         )
 target_compile_definitions(IoT PRIVATE
         WIFI_SSID=\"${WIFI_SSID}\"

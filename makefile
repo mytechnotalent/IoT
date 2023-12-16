@@ -34,8 +34,6 @@ client:
 	rm -rf $(TLS_CLIENT_DIR)/CMakeFiles
 	PICO_SDK_PATH=$(PICO_SDK_PATH) \
 	cd $(CLIENT_BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=Debug -DWIFI_SSID="$$WIFI_SSID" -DWIFI_PASSWORD="$$WIFI_PASSWORD" $(TLS_CLIENT_DIR) && make
-	echo $$WIFI_SSID
-	echo $$WIFI_PASSWORD
 
 flash-client:
 	@for i in $$(seq 1 10); do \
