@@ -1,3 +1,0 @@
-/home/pc/Documents/IoT/TLS_client/pioasm/CMakeFiles/pioasm.dir
-/home/pc/Documents/IoT/TLS_client/pioasm/CMakeFiles/edit_cache.dir
-/home/pc/Documents/IoT/TLS_client/pioasm/CMakeFiles/rebuild_cache.dir
