@@ -44,6 +44,7 @@
 #include <arpa/inet.h>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
+#include <ifaddrs.h>
 
 /* constants */
 #define SERVER_PORT 443
@@ -76,17 +77,22 @@ void configure_context(SSL_CTX *ctx);
  *
  * @retval The file descriptor of the created socket.
  */
-int create_socket(void);
+int8_t create_socket(void);
 
 /**
- * @brief Binds a socket to a specific address and port.
+ * @brief  Binds a socket to the specified address.
  *
- * This function binds the server socket to a specified address and port.
+ *         This function binds a socket to the specified address. It sets the
+ *         socket option to allow immediate reuse after closure and binds the
+ *         socket to the provided address. If any error occurs during this
+ *         process, it prints an error message, closes the socket, and exits with
+ *         a failure status.
  *
- * @param server_fd The file descriptor of the server socket.
- * @param server_addr The server's address structure.
+ * @param  server_fd:   File descriptor of the socket
+ * @param  server_addr: Pointer to the sockaddr_in structure representing the address
+ * @retval None
  */
-void bind_socket(int server_fd, struct sockaddr_in *server_addr);
+void bind_socket(int8_t server_fd, struct sockaddr_in *server_addr);
 
 /**
  * @brief Listens for incoming client connections on the server socket.
@@ -95,7 +101,7 @@ void bind_socket(int server_fd, struct sockaddr_in *server_addr);
  *
  * @param server_fd The file descriptor of the server socket.
  */
-void listen_for_connections(int server_fd);
+void listen_for_connections(int8_t server_fd);
 
 /**
  * @brief Accepts a client connection and returns the client socket.
@@ -108,7 +114,7 @@ void listen_for_connections(int server_fd);
  * @param addr_len The length of the client's address structure.
  * @retval The file descriptor of the accepted client socket.
  */
-int accept_connection(int server_fd, struct sockaddr_in *client_addr, socklen_t *addr_len);
+int8_t accept_connection(int8_t server_fd, struct sockaddr_in *client_addr, socklen_t *addr_len);
 
 /**
  * @brief Creates an SSL connection using the provided SSL context and client socket.
@@ -120,7 +126,7 @@ int accept_connection(int server_fd, struct sockaddr_in *client_addr, socklen_t 
  * @param client_fd The file descriptor of the client socket.
  * @retval A pointer to the created SSL structure.
  */
-SSL *create_ssl_connection(SSL_CTX *ctx, int client_fd);
+SSL *create_ssl_connection(SSL_CTX *ctx, int8_t client_fd);
 
 /**
  * @brief Handles communication over an established SSL connection.
@@ -154,6 +160,25 @@ void url_decode(char *str);
  * @param ctx The SSL context associated with the connection.
  * @param client_fd The file descriptor of the client socket.
  */
-void close_ssl_connection(SSL *ssl, SSL_CTX *ctx, int client_fd);
+void close_ssl_connection(SSL *ssl, SSL_CTX *ctx, int8_t client_fd);
+
+/**
+ * @brief  Initializes and runs an SSL/TLS server.
+ *
+ *         This function initializes and runs an SSL/TLS server. It performs the
+ *         following steps:
+ *         - Initializes the SSL library.
+ *         - Creates and configures the SSL context.
+ *         - Retrieves the IP address of the "wlan0" interface.
+ *         - Creates a socket and binds it to the "wlan0" interface.
+ *         - Listens for incoming connections.
+ *         - Accepts an incoming connection and creates an SSL connection state.
+ *         - Handles the SSL connection, using a buffer for data exchange.
+ *         - Closes the SSL connection and frees the SSL context.
+ *         - Closes the server socket.
+ *
+ * @retval None
+ */
+void init_server(void);
 
 #endif // SERVER_H
