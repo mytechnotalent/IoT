@@ -19,16 +19,33 @@ Iot TLS minimalistic project utilizing a Raspberry Pi 5 as a TLS server and a Pi
 
 # Setup
 ```bash
+sudo ./install.sh
+./clone_pico-sdk.sh
+./clone_openocd.sh
+sudo ./build_openocd.sh
 ```
 
 <br>
 
-# Usage
+# Usage Terminal 1
 ```bash
-make
+export WIFI_SSID="<YOUR_WIFI_SSID>" WIFI_PASSWORD="<YOUR_WIFI_PASSWORD>"
+sudo nmcli device disconnect wlan0
+sudo nmcli device wifi hotspot ssid $WIFI_SSID password $WIFI_PASSWORD
+sudo make clean-server
+sudo make server
+make clean-client
+make client
+sudo make flash-client
+sudo make run-server
 ```
 
-# `main.c`
+# Usage Terminal 2
+```bash
+make open-terminal
+```
+
+# `main.c` within `TLS_client` Folder
 ```c
 
 /**
@@ -55,6 +72,8 @@ make
  * SOFTWARE.
 */
 ```
+
+## UNDER DEVELOPMENT STANDBY...
 
 <br>
 
