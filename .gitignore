@@ -62,3 +62,6 @@ TLS_client/pico-sdk
 
 # CMakeFiles
 TLS_client/CMakeFiles
+
+# CMakeFiles
+TLS_client/pioasm
