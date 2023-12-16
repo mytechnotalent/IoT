@@ -69,3 +69,5 @@ TLS_client/pioasm
 # generated
 TLS_client/generated
 
+# elf2uf2
+TLS_client/elf2uf2
