@@ -16,26 +16,11 @@ server:
 	mkdir -p $(SERVER_BUILD_DIR)
 	mkdir -p $(SSL_DIR)
 	openssl genpkey -algorithm RSA -out $(SSL_DIR)/server.key
-	openssl req -new -key $(SSL_DIR)/server.key -out $(SSL_DIR)/server.csr -subj "/CN=localhost"
+	openssl req -new -key $(SSL_DIR)/server.key -out $(SSL_DIR)/server.csr -subj "/C=US/ST=VA/L=Ashburn/O=Organization/CN=10.42.0.1"
 	openssl x509 -req -days 365 -in $(SSL_DIR)/server.csr -signkey $(SSL_DIR)/server.key -out $(SSL_DIR)/server.crt
 	gcc -Wall -Wextra -pedantic -c -o $(SRC_DIR)/server.o $(SRC_DIR)/server.c
 	gcc -Wall -Wextra -pedantic -c -o $(SRC_DIR)/server_instance.o $(SRC_DIR)/server_instance.c
 	gcc -o $(SERVER_BUILD_DIR)/server $(SRC_DIR)/server_instance.o $(SRC_DIR)/server.o -lssl -lcrypto
-
-stop-network:
-	nmcli device disconnect wlan0
-
-start-network:
-	nmcli device disconnect wlan0
-	read -p "enter the WiFi network name (SSID): " network_name
-	read -p "enter the WiFi password: " network_password
-	echo
-	export WIFI_SSID="$network_name"
-	export WIFI_PASSWORD="$network_password"
-	nmcli device wifi hotspot ssid "$network_name" password "$network_password"
-
-run-server:
-	$(SERVER_BUILD_DIR)/server
 
 clean-client:
 	rm -rf $(CLIENT_BUILD_DIR)
@@ -48,11 +33,26 @@ client:
 	rm -f $(TLS_CLIENT_DIR)/CMakeCache.txt
 	rm -rf $(TLS_CLIENT_DIR)/CMakeFiles
 	PICO_SDK_PATH=$(PICO_SDK_PATH) \
-	read -p "Enter the WiFi network name (SSID): " network_name; \
-	read -p "Enter the WiFi password: " network_password; \
-	echo; \
-	WIFI_SSID="$network_name" WIFI_PASSWORD="$network_password" \
-	cd $(CLIENT_BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=Debug $(TLS_CLIENT_DIR) && make
+	cd $(CLIENT_BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=Debug -DWIFI_SSID="$$WIFI_SSID" -DWIFI_PASSWORD="$$WIFI_PASSWORD" $(TLS_CLIENT_DIR) && make
+	echo $$WIFI_SSID
+	echo $$WIFI_PASSWORD
+
+flash-client:
+	@for i in $$(seq 1 10); do \
+		if [ -d "/media/pc/RPI-RP2" ]; then \
+		echo "Flashing UF2..."; \
+			break; \
+		fi; \
+		sleep 1; \
+	done; \
+	if [ ! -d "/media/pc/RPI-RP2" ]; then \
+		echo "Please put Pico W into boot mode!"; \
+	else \
+		sudo cp $(CLIENT_BUILD_DIR)/IoT.uf2 /media/pc/RPI-RP2; \
+	fi
+
+run-server:
+	$(SERVER_BUILD_DIR)/server
 
 capture-dumpcap:
 	touch capture.pcap

@@ -52,6 +52,8 @@
 extern bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char *server, const char *request, int timeout);
 
 int main(void) {
+    int8_t pico_error_code = 0;
+
     stdio_init_all();
 
     if (cyw43_arch_init()) {
@@ -60,8 +62,10 @@ int main(void) {
     }
     cyw43_arch_enable_sta_mode();
 
-    if (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
-        printf("failed to connect\r\n");
+    // printf("WIFI_SSID: %s\r\n", WIFI_SSID);
+    // printf("WIFI_PASSWORD: %s\r\n", WIFI_PASSWORD);
+    if (pico_error_code = cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
+        printf("Failed to connect: %d\r\n", pico_error_code);
         return 1;
     }
     bool pass = run_tls_client_test(NULL, 0, TLS_CLIENT_SERVER, TLS_CLIENT_HTTP_REQUEST, TLS_CLIENT_TIMEOUT_SECS);

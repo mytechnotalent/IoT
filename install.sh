@@ -6,4 +6,5 @@ apt install automake autoconf build-essential texinfo libtool libftdi-dev libusb
 apt install libssl-dev
 apt install tshark
 apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
+apt install screen
 
