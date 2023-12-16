@@ -45,21 +45,21 @@ int main(void) {
   SSL *ssl;
   char buffer[BUFFER_SIZE];
 
-  // Initialize SSL
+  // initialize SSL
   SSL_library_init();
 
-  // Create and configure SSL context
+  // create and configure SSL context
   ctx = create_context();
   configure_context(ctx);
 
-  // Get list of all network interfaces
+  // get list of all network interfaces
   struct ifaddrs *ifa_list, *ifa;
   if (getifaddrs(&ifa_list) == -1) {
     perror("getifaddrs");
     exit(1);
   }
 
-  // Find the wlan0 interface and use its address
+  // find the wlan0 interface and use its address
   for (ifa = ifa_list; ifa; ifa = ifa->ifa_next) {
     if (ifa->ifa_addr && ifa->ifa_addr->sa_family == AF_INET &&
         strcmp(ifa->ifa_name, "wlan0") == 0) {
@@ -68,43 +68,43 @@ int main(void) {
     }
   }
 
-  // Free the list of interfaces
+  // free the list of interfaces
   freeifaddrs(ifa_list);
 
-  // Check if wlan0 was found
+  // check if wlan0 was found
   if (!ifa) {
     printf("Error: wlan0 interface not found!\n");
     exit(1);
   }
 
-  // Create socket
+  // create socket
   int server_fd = create_socket();
 
-  // Set up server address struct
+  // set up server address struct
   server_addr.sin_family = AF_INET;
   server_addr.sin_port = htons(SERVER_PORT);
 
-  // Bind the socket to wlan0
+  // bind the socket to wlan0
   bind_socket(server_fd, &server_addr);
 
-  // Listen for incoming connections
+  // listen for incoming connections
   listen_for_connections(server_fd);
 
   printf("server listening on port %d (wlan0)...\n", SERVER_PORT);
 
-  // Accept incoming connections
+  // accept incoming connections
   int client_fd = accept_connection(server_fd, &server_addr, &addr_len);
 
-  // Create new SSL connection state
+  // create new SSL connection state
   ssl = create_ssl_connection(ctx, client_fd);
 
-  // Handle SSL connection
+  // handle SSL connection
   handle_ssl_connection(ssl, buffer);
 
-  // Close the SSL connection and free the context
+  // close the SSL connection and free the context
   close_ssl_connection(ssl, ctx, client_fd);
 
-  // Close the server socket
+  // close the server socket
   close(server_fd);
 
   return 0;
