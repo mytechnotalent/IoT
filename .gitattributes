@@ -1,3 +1,2 @@
 *.c linguist-language=C
 *.sh linguist-detectable=false
-pico-sdk/* linguist-detectable=false
