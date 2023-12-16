@@ -1,2 +1,2 @@
 *.c linguist-language=C
-Makefile linguist-detectable=false
+*.sh linguist-detectable=false
