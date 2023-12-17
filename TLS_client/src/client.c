@@ -335,7 +335,7 @@ static TLS_CLIENT_T* tls_client_init(void) {
  * @param  timeout: Timeout value for the TLS client operation in seconds
  * @retval true if the TLS client test is successful, false otherwise
  */
-static bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char *server, const char *request, uint8_t timeout) {
+static bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char *server, const char *request) {
     TLS_CLIENT_T *state = tls_client_init();
     int err = state->error;
 
@@ -345,7 +345,7 @@ static bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char
     if (!state)
         return false;
     state->http_request = request;
-    state->timeout = timeout;
+    state->timeout = 10;
     if (!tls_client_open(server, state))
         return false;
     while(!state->complete) {
@@ -361,26 +361,39 @@ static bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char
     return err == 0;
 }
 
-void init_client(const char *TLS_CLIENT_SERVER, const char *TLS_CLIENT_HTTP_REQUEST, const uint8_t TLS_CLIENT_TIMEOUT_SECS) {
-    int8_t pico_error_code = 0;
+void init_client(const char *TLS_CLIENT_SERVER, const char *TLS_CLIENT_HTTP_REQUEST) {
+  int8_t pico_error_code = 0;
+  int8_t retries = 3;
 
-    if (cyw43_arch_init()) {
-        printf("failed to initialise\r\n");
-        return;
-    }
-    cyw43_arch_enable_sta_mode();
+  if (cyw43_arch_init()) {
+    printf("failed to initialise\r\n");
+    return;
+  }
 
+  cyw43_arch_enable_sta_mode();
+
+  while (retries > 0) {
     if (pico_error_code = cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
-        printf("Failed to connect: %d\r\n", pico_error_code);
-        return;
+      printf("Failed to connect: %d\r\n", pico_error_code);
+      retries--;
+      continue;
     }
-    bool pass = run_tls_client_test(NULL, 0, TLS_CLIENT_SERVER, TLS_CLIENT_HTTP_REQUEST, TLS_CLIENT_TIMEOUT_SECS);
-    if (pass)
-        printf("Test passed.\r\n");
-    else
-        printf("Test failed.\r\n");
-    // sleep a bit to let usb stdio write out any buffer to host
-    sleep_ms(100);
-    cyw43_arch_deinit();
-    printf("All done...\r\n");
+
+    bool pass = run_tls_client_test(NULL, 0, TLS_CLIENT_SERVER, TLS_CLIENT_HTTP_REQUEST);
+    if (pass) {
+      printf("Test passed.\r\n");
+      break;
+    } else {
+      printf("Test failed.\r\n");
+      retries--;
+    }
+  }
+
+  if (retries == 0) {
+    printf("Exceeded retry limit.\r\n");
+  }
+
+  sleep_ms(100);
+  cyw43_arch_deinit();
+  printf("All done...\r\n");
 }
