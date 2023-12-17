@@ -54,6 +54,5 @@
 int main(void) {
     stdio_init_all();
 
-    while (1)
-        init_client(&TLS_CLIENT_SERVER, &TLS_CLIENT_HTTP_REQUEST, TLS_CLIENT_TIMEOUT_SECS);
+    init_client(&TLS_CLIENT_SERVER, &TLS_CLIENT_HTTP_REQUEST, TLS_CLIENT_TIMEOUT_SECS);
 }
