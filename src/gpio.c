@@ -117,3 +117,7 @@ void gpio17_set(void) {
     system(GPIO17_SET);
 }
 
+void gpio17_set(void) {
+    system(GPIO17_CLEAR);
+}
+

@@ -51,13 +51,22 @@
 #define SERVER_PORT 443
 #define BUFFER_SIZE 1024
 
+/**
+ * @brief  Defines a type alias for a function pointer to functions with no arguments and void return type.
+ *
+ *         This typedef creates an alias named 'func_ptr' for a pointer to a function that takes no arguments
+ *         and returns void. It is commonly used to improve code readability and simplify declarations of
+ *         function pointers with the specified signature.
+ */
 typedef void (*func_ptr)(void);
 
 /**
- * @brief  Runs an SSL/TLS server continuously.
+ * @brief  Runs a server in an Internet of Things (IoT) context using the specified function pointer.
  *
- *         This function runs an SSL/TLS server continuously. It performs the
- *         following steps in an infinite loop:
+ *         This function initiates the execution of a server within the context of Internet of Things (IoT)
+ *         operations, using the provided function pointer. The details of server implementation and IoT context
+ *         are expected to be specified within the function passed as a parameter. The function performs the
+ *         following steps:
  *         - Initializes the SSL library.
  *         - Creates and configures the SSL context.
  *         - Retrieves the IP address of the "wlan0" interface.
@@ -68,8 +77,10 @@ typedef void (*func_ptr)(void);
  *         - Closes the SSL connection and frees the SSL context.
  *         - Closes the server socket.
  *
+ * @param  iot  Function pointer to the IoT-specific server implementation.
  * @retval None
  */
 void run_server(func_ptr iot);
 
 #endif // SERVER_H
+

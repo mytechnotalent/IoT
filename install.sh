@@ -7,4 +7,4 @@ apt install libssl-dev
 apt install tshark
 apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
 apt install screen
-
+apt install gpiod

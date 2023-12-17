@@ -72,7 +72,29 @@ extern const char *GPIO11_CLEAR;
  */
 bool read_gpio_state(const char *gpio_cmd);
 
+/**
+ * @brief  Sets the GPIO pin 17 to a high logic level.
+ *
+ *         This function is responsible for setting the GPIO pin 17 to a high logic level.
+ *         The specific details of how the GPIO pin is configured and controlled depend
+ *         on the hardware and underlying platform.
+ *
+ * @param  None
+ * @retval None
+ */
 void gpio17_set(void);
+
+/**
+ * @brief  Sets the GPIO pin 17 to a low logic level.
+ *
+ *         This function is responsible for setting the GPIO pin 17 to a low logic level.
+ *         The specific details of how the GPIO pin is configured and controlled depend
+ *         on the hardware and underlying platform.
+ *
+ * @param  None
+ * @retval None
+ */
+void gpio17_clear(void);
 
 #endif // GPIO_H
 
