@@ -47,8 +47,23 @@
 #include "lwip/altcp_tls.h"
 #include "lwip/dns.h"
 
-
-void init_client(const char *TLS_CLIENT_SERVER, const char *TLS_CLIENT_HTTP_REQUEST, const uint8_t TLS_CLIENT_TIMEOUT_SECS);
+/**
+ * @brief  Runs an SSL/TLS client continuously.
+ *
+ *         This function runs an SSL/TLS client continuously. It performs the
+ *         following steps in an infinite loop:
+ *         - Initializes the CYW43 WiFi module.
+ *         - Enables station (STA) mode on the WiFi module.
+ *         - Connects to the specified Wi-Fi network using the provided credentials.
+ *         - Runs an SSL/TLS client test with the specified server and HTTP request.
+ *         - Deinitializes the CYW43 WiFi module.
+ *         - Prints a completion message.
+ *
+ * @param  TLS_CLIENT_SERVER:        The server to connect to (hostname or IP address)
+ * @param  TLS_CLIENT_HTTP_REQUEST: The HTTP request to send to the server
+ * @retval None
+ */
+void run_client(const char *TLS_CLIENT_SERVER, const char *TLS_CLIENT_HTTP_REQUEST);
 
 #endif // SERVER_H
 

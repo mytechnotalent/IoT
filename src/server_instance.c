@@ -37,5 +37,5 @@
 #include "server.h"
 
 int main(void) {
-    init_server();
+    run_server();
 }

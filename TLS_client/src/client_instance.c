@@ -49,10 +49,9 @@
                                 "Content-Length: " MESSAGE_LEN "\r\n" \
                                 "\r\n" \
                                 MESSAGE
-#define TLS_CLIENT_TIMEOUT_SECS 15
 
 int main(void) {
     stdio_init_all();
 
-    init_client(&TLS_CLIENT_SERVER, &TLS_CLIENT_HTTP_REQUEST, TLS_CLIENT_TIMEOUT_SECS);
+    run_client(&TLS_CLIENT_SERVER, &TLS_CLIENT_HTTP_REQUEST);
 }
