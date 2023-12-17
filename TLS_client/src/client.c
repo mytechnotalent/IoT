@@ -318,7 +318,24 @@ static TLS_CLIENT_T* tls_client_init(void) {
     return state;
 }
 
-bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char *server, const char *request, uint8_t timeout) {
+/**
+ * @brief  Runs a TLS client test with the specified parameters.
+ *
+ *         This function initializes a TLS client, sets up a TLS configuration
+ *         using the provided certificate, and performs a TLS handshake with the
+ *         server. It then sends an HTTP request and waits for the completion of
+ *         the request. The function returns true if the test is successful,
+ *         indicating that the TLS client was able to establish a connection and
+ *         complete the request without errors.
+ *
+ * @param  cert: Pointer to the certificate data
+ * @param  cert_len: Length of the certificate data
+ * @param  server: The server address or hostname
+ * @param  request: The HTTP request to be sent
+ * @param  timeout: Timeout value for the TLS client operation in seconds
+ * @retval true if the TLS client test is successful, false otherwise
+ */
+static bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char *server, const char *request, uint8_t timeout) {
     TLS_CLIENT_T *state = tls_client_init();
     int err = state->error;
 
@@ -342,4 +359,28 @@ bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char *serve
     free(state);
     altcp_tls_free_config(tls_config);
     return err == 0;
+}
+
+void init_client(const char *TLS_CLIENT_SERVER, const char *TLS_CLIENT_HTTP_REQUEST, const uint8_t TLS_CLIENT_TIMEOUT_SECS) {
+    int8_t pico_error_code = 0;
+
+    if (cyw43_arch_init()) {
+        printf("failed to initialise\r\n");
+        return;
+    }
+    cyw43_arch_enable_sta_mode();
+
+    if (pico_error_code = cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
+        printf("Failed to connect: %d\r\n", pico_error_code);
+        return;
+    }
+    bool pass = run_tls_client_test(NULL, 0, TLS_CLIENT_SERVER, TLS_CLIENT_HTTP_REQUEST, TLS_CLIENT_TIMEOUT_SECS);
+    if (pass)
+        printf("Test passed.\r\n");
+    else
+        printf("Test failed.\r\n");
+    // sleep a bit to let usb stdio write out any buffer to host
+    sleep_ms(100);
+    cyw43_arch_deinit();
+    printf("All done...\r\n");
 }

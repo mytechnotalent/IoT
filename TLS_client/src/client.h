@@ -47,24 +47,8 @@
 #include "lwip/altcp_tls.h"
 #include "lwip/dns.h"
 
-/**
- * @brief  Runs a TLS client test with the specified parameters.
- *
- *         This function initializes a TLS client, sets up a TLS configuration
- *         using the provided certificate, and performs a TLS handshake with the
- *         server. It then sends an HTTP request and waits for the completion of
- *         the request. The function returns true if the test is successful,
- *         indicating that the TLS client was able to establish a connection and
- *         complete the request without errors.
- *
- * @param  cert: Pointer to the certificate data
- * @param  cert_len: Length of the certificate data
- * @param  server: The server address or hostname
- * @param  request: The HTTP request to be sent
- * @param  timeout: Timeout value for the TLS client operation in seconds
- * @retval true if the TLS client test is successful, false otherwise
- */
-bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char *server, const char *request, uint8_t timeout);
+
+void init_client(const char *TLS_CLIENT_SERVER, const char *TLS_CLIENT_HTTP_REQUEST, const uint8_t TLS_CLIENT_TIMEOUT_SECS);
 
 #endif // SERVER_H
 
