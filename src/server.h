@@ -77,10 +77,10 @@ typedef void (*func_ptr)(void);
  *         - Closes the SSL connection and frees the SSL context.
  *         - Closes the server socket.
  *
- * @param  iot  Function pointer to the IoT-specific server implementation.
+ * @param  func_ptrs Variadic function pointers to the IoT-specific server implementation.
  * @retval None
  */
-void run_server(func_ptr iot);
+void run_server(func_ptr *func_ptrs);
 
 #endif // SERVER_H
 

@@ -38,5 +38,7 @@
 #include "gpio.h"
 
 int main(void) {
-    run_server(gpio17_set);
+    func_ptr func_ptrs[] = {gpio17_set, gpio17_clear, NULL};
+
+    run_server(func_ptrs);
 }

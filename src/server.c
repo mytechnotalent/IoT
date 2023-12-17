@@ -118,8 +118,9 @@ static SSL *create_ssl_connection(SSL_CTX *ctx, int8_t client_fd);
  *
  * @param ssl The SSL structure representing the connection.
  * @param buffer A buffer to store the received data.
+ * @param func_ptrs A variadic number of IoT related functions to be executed.
  */
-static void handle_ssl_connection(SSL *ssl, char *buffer, func_ptr iot);
+static void handle_ssl_connection(SSL *ssl, char *buffer, func_ptr *func_ptrs);
 
 /**
  * @brief  URL-decodes a string in-place.
@@ -226,7 +227,7 @@ static SSL *create_ssl_connection(SSL_CTX *ctx, int8_t client_fd) {
     return ssl;
 }
 
-static void handle_ssl_connection(SSL *ssl, char *buffer, func_ptr iot) {
+static void handle_ssl_connection(SSL *ssl, char *buffer, func_ptr *func_ptrs) {
     printf("SSL connection established!\n");
     // read data from the client
     uint64_t bytes_received = SSL_read(ssl, buffer, BUFFER_SIZE - 1);
@@ -259,8 +260,8 @@ static void handle_ssl_connection(SSL *ssl, char *buffer, func_ptr iot) {
                 // process the decoded message as needed
                 printf("Decoded message: %s\n", message);
                 // call custom functionality
-                if (iot)
-                    iot();
+                for (uint8_t i = 0; func_ptrs[i] != NULL; ++i)
+                    func_ptrs[i]();
                 // send a response to the client
                 const char *response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nHello from the server!";
                 SSL_write(ssl, response, strlen(response));
@@ -297,7 +298,7 @@ static void close_ssl_connection(SSL *ssl, SSL_CTX *ctx, int8_t client_fd) {
     close(client_fd);
 }
 
-void run_server(func_ptr iot) {
+void run_server(func_ptr *func_ptrs) {
     struct sockaddr_in server_addr;
     struct ifaddrs *ifa_list, *ifa;
     socklen_t addr_len = sizeof(struct sockaddr_in);
@@ -347,7 +348,7 @@ void run_server(func_ptr iot) {
         // create new SSL connection state
         ssl = create_ssl_connection(ctx, client_fd);
         // handle SSL connection
-        handle_ssl_connection(ssl, buffer, iot);
+        handle_ssl_connection(ssl, buffer, func_ptrs);
         // close the SSL connection and free the context
         close_ssl_connection(ssl, ctx, client_fd);
         // close the server socket
