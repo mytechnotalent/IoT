@@ -64,8 +64,8 @@ void configure_context(SSL_CTX *ctx) {
     chdir("..");
 }
 
-int create_socket(void) {
-    int server_fd;
+int8_t create_socket(void) {
+    int8_t server_fd;
 
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         perror("socket creation failed");
@@ -74,22 +74,31 @@ int create_socket(void) {
     return server_fd;
 }
 
-void bind_socket(int server_fd, struct sockaddr_in *server_addr) {
+void bind_socket(int8_t server_fd, struct sockaddr_in *server_addr) {
+    int opt = 1;
+
+    // allow the socket to be reused immediately after it is closed
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        perror("setsockopt");
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
     if (bind(server_fd, (struct sockaddr *)server_addr, sizeof(*server_addr)) < 0) {
         perror("bind failed");
+        close(server_fd);
         exit(EXIT_FAILURE);
     }
 }
 
-void listen_for_connections(int server_fd) {
+void listen_for_connections(int8_t server_fd) {
     if (listen(server_fd, 3) < 0) {
         perror("listen failed");
         exit(EXIT_FAILURE);
     }
 }
 
-int accept_connection(int server_fd, struct sockaddr_in *client_addr, socklen_t *addr_len) {
-    int client_fd;
+int8_t accept_connection(int8_t server_fd, struct sockaddr_in *client_addr, socklen_t *addr_len) {
+    int8_t client_fd;
 
     if ((client_fd = accept(server_fd, (struct sockaddr *)client_addr, addr_len)) < 0) {
         perror("accept failed");
@@ -98,7 +107,7 @@ int accept_connection(int server_fd, struct sockaddr_in *client_addr, socklen_t 
     return client_fd;
 }
 
-SSL *create_ssl_connection(SSL_CTX *ctx, int client_fd) {
+SSL *create_ssl_connection(SSL_CTX *ctx, int8_t client_fd) {
     SSL *ssl = SSL_new(ctx);
     SSL_set_fd(ssl, client_fd);
 
@@ -112,7 +121,7 @@ SSL *create_ssl_connection(SSL_CTX *ctx, int client_fd) {
 void handle_ssl_connection(SSL *ssl, char *buffer) {
     printf("SSL connection established!\n");
     // read data from the client
-    int bytes_received = SSL_read(ssl, buffer, BUFFER_SIZE - 1);
+    uint64_t bytes_received = SSL_read(ssl, buffer, BUFFER_SIZE - 1);
     if (bytes_received <= 0) {
         ERR_print_errors_fp(stderr);
         exit(EXIT_FAILURE);
@@ -126,7 +135,7 @@ void handle_ssl_connection(SSL *ssl, char *buffer) {
         const char *content_length_token = "Content-Length: ";
         char *content_length_start = strstr(buffer, content_length_token);
         if (content_length_start) {
-            int content_length = atoi(content_length_start + strlen(content_length_token));
+            uint32_t content_length = atoi(content_length_start + strlen(content_length_token));
             // move buffer pointer to the start of POST data
             char *post_data_start = strstr(buffer, "\r\n\r\n") + 4;
             if (post_data_start) {
@@ -153,7 +162,6 @@ void handle_ssl_connection(SSL *ssl, char *buffer) {
     }
 }
 
-
 void url_decode(char *str) {
     char *pos = str;
 
@@ -171,7 +179,7 @@ void url_decode(char *str) {
     *pos = '\0'; // null-terminate the decoded string
 }
 
-void close_ssl_connection(SSL *ssl, SSL_CTX *ctx, int client_fd) {
+void close_ssl_connection(SSL *ssl, SSL_CTX *ctx, int8_t client_fd) {
     // close the SSL connection and free the context
     SSL_free(ssl);
     SSL_CTX_free(ctx);
@@ -179,3 +187,58 @@ void close_ssl_connection(SSL *ssl, SSL_CTX *ctx, int client_fd) {
     close(client_fd);
 }
 
+void init_server(void) {
+    struct sockaddr_in server_addr;
+    socklen_t addr_len = sizeof(struct sockaddr_in);
+    SSL_CTX *ctx;
+    SSL *ssl;
+    char buffer[BUFFER_SIZE];
+
+    while (1) {
+        // initialize SSL
+        SSL_library_init();
+        // create and configure SSL context
+        ctx = create_context();
+        configure_context(ctx);
+        // get list of all network interfaces
+        struct ifaddrs *ifa_list, *ifa;
+        if (getifaddrs(&ifa_list) == -1) {
+            perror("getifaddrs");
+            exit(1);
+        }
+        // find the wlan0 interface and use its address
+        for (ifa = ifa_list; ifa; ifa = ifa->ifa_next) {
+            if (ifa->ifa_addr && ifa->ifa_addr->sa_family == AF_INET && strcmp(ifa->ifa_name, "wlan0") == 0) {
+                server_addr.sin_addr = ((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+                break;
+            }
+        }
+        // free the list of interfaces
+        freeifaddrs(ifa_list);
+        // check if wlan0 was found
+        if (!ifa) {
+            printf("Error: wlan0 interface not found!\n");
+            exit(1);
+        }
+        // create socket
+        int8_t server_fd = create_socket();
+        // set up server address struct
+        server_addr.sin_family = AF_INET;
+        server_addr.sin_port = htons(SERVER_PORT);
+        // bind the socket to wlan0
+        bind_socket(server_fd, &server_addr);
+        // listen for incoming connections
+        listen_for_connections(server_fd);
+        printf("server listening on port %d (wlan0)...\n", SERVER_PORT);
+        // accept incoming connections
+        int8_t client_fd = accept_connection(server_fd, &server_addr, &addr_len);
+        // create new SSL connection state
+        ssl = create_ssl_connection(ctx, client_fd);
+        // handle SSL connection
+        handle_ssl_connection(ssl, buffer);
+        // close the SSL connection and free the context
+        close_ssl_connection(ssl, ctx, client_fd);
+        // close the server socket
+        close(server_fd);
+    }
+}

@@ -36,6 +36,7 @@
 
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "pico/stdlib.h"
 #include "pico/cyw43_arch.h"
@@ -345,7 +346,7 @@ static bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char
     if (!state)
         return false;
     state->http_request = request;
-    state->timeout = 10;
+    state->timeout = 30;
     if (!tls_client_open(server, state))
         return false;
     while(!state->complete) {
@@ -362,32 +363,18 @@ static bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char
 }
 
 void init_client(const char *TLS_CLIENT_SERVER, const char *TLS_CLIENT_HTTP_REQUEST) {
-    int8_t pico_error_code = 0;
-    int8_t retries = 100;
+    uint32_t TIMEOUT = 30000;
+    int pico_error_code = 0;
 
     while (1) {
-        if (cyw43_arch_init()) {
+        if (cyw43_arch_init()) 
             printf("failed to initialize\r\n");
-            return;
-        }
         cyw43_arch_enable_sta_mode();
-        while (retries > 0) {
-            if (pico_error_code = cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
-                retries--;
-                continue;
-            }
-            bool pass = run_tls_client_test(NULL, 0, TLS_CLIENT_SERVER, TLS_CLIENT_HTTP_REQUEST);
-            if (pass) {
-                printf("Test passed.\r\n");
-                break;
-            } else {
-                printf("Test failed.\r\n");
-                retries--;
-            }
-        }
-        if (retries == 0) 
-            printf("Exceeded retry limit.\r\n");
-        sleep_ms(100);
+        printf("Connecting to Wi-Fi network: %s\r\n", WIFI_SSID);
+        pico_error_code = cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, TIMEOUT);
+        if (pico_error_code)
+            printf("Failed to initiate connection: %d\r\n", pico_error_code);
+        run_tls_client_test(NULL, 0, TLS_CLIENT_SERVER, TLS_CLIENT_HTTP_REQUEST);
         cyw43_arch_deinit();
         printf("All done...\r\n");
     }
