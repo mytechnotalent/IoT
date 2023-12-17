@@ -35,7 +35,8 @@
  */
 
 #include "server.h"
+#include "gpio.h"
 
 int main(void) {
-    run_server();
+    run_server(gpio17_set);
 }

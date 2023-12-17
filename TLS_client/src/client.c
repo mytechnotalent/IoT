@@ -536,11 +536,10 @@ void run_client(const char *TLS_CLIENT_SERVER, const char *TLS_CLIENT_HTTP_REQUE
         if (cyw43_arch_init()) 
             printf("Failed to initialize\r\n");
         cyw43_arch_enable_sta_mode();
-        // printf("Connecting to Wi-Fi network: %s\r\n", WIFI_SSID);
+        printf("Connecting to Wi-Fi network: %s\r\n", WIFI_SSID);
         cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, TIMEOUT);
         run_tls_client_test(NULL, 0, TLS_CLIENT_SERVER, TLS_CLIENT_HTTP_REQUEST);
         cyw43_arch_deinit();
-        printf("All done...\r\n\n");
     }
 }
 

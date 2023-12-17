@@ -20,7 +20,8 @@ server:
 	openssl x509 -req -days 365 -in $(SSL_DIR)/server.csr -signkey $(SSL_DIR)/server.key -out $(SSL_DIR)/server.crt
 	gcc -Wall -Wextra -pedantic -c -o $(SRC_DIR)/server.o $(SRC_DIR)/server.c
 	gcc -Wall -Wextra -pedantic -c -o $(SRC_DIR)/server_instance.o $(SRC_DIR)/server_instance.c
-	gcc -o $(SERVER_BUILD_DIR)/server $(SRC_DIR)/server_instance.o $(SRC_DIR)/server.o -lssl -lcrypto
+	gcc -Wall -Wextra -pedantic -c -o $(SRC_DIR)/gpio.o $(SRC_DIR)/gpio.c
+	gcc -o $(SERVER_BUILD_DIR)/server $(SRC_DIR)/server_instance.o $(SRC_DIR)/server.o $(SRC_DIR)/gpio.o -lssl -lcrypto
 
 clean-client:
 	rm -rf $(CLIENT_BUILD_DIR)

@@ -35,6 +35,7 @@
  */
 
 #include "server.h"
+#include "gpio.h"
 
 /**
  * @brief Creates and initializes an SSL context for the server.
@@ -118,7 +119,7 @@ static SSL *create_ssl_connection(SSL_CTX *ctx, int8_t client_fd);
  * @param ssl The SSL structure representing the connection.
  * @param buffer A buffer to store the received data.
  */
-static void handle_ssl_connection(SSL *ssl, char *buffer);
+static void handle_ssl_connection(SSL *ssl, char *buffer, func_ptr iot);
 
 /**
  * @brief  URL-decodes a string in-place.
@@ -127,7 +128,7 @@ static void handle_ssl_connection(SSL *ssl, char *buffer);
  *         characters with their corresponding ASCII values. The decoded string
  *         replaces the original input string.
  *
- * @param  str: The string to be URL-decoded.
+ * @param  str The string to be URL-decoded.
  */
 static void url_decode(char *str);
 
@@ -225,7 +226,7 @@ static SSL *create_ssl_connection(SSL_CTX *ctx, int8_t client_fd) {
     return ssl;
 }
 
-static void handle_ssl_connection(SSL *ssl, char *buffer) {
+static void handle_ssl_connection(SSL *ssl, char *buffer, func_ptr iot) {
     printf("SSL connection established!\n");
     // read data from the client
     uint64_t bytes_received = SSL_read(ssl, buffer, BUFFER_SIZE - 1);
@@ -257,7 +258,10 @@ static void handle_ssl_connection(SSL *ssl, char *buffer) {
                 url_decode(message);
                 // process the decoded message as needed
                 printf("Decoded message: %s\n", message);
-                // Send a response to the client
+                // call custom functionality
+                if (iot)
+                    iot();
+                // send a response to the client
                 const char *response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nHello from the server!";
                 SSL_write(ssl, response, strlen(response));
             }
@@ -293,7 +297,7 @@ static void close_ssl_connection(SSL *ssl, SSL_CTX *ctx, int8_t client_fd) {
     close(client_fd);
 }
 
-void run_server(void) {
+void run_server(func_ptr iot) {
     struct sockaddr_in server_addr;
     struct ifaddrs *ifa_list, *ifa;
     socklen_t addr_len = sizeof(struct sockaddr_in);
@@ -343,7 +347,7 @@ void run_server(void) {
         // create new SSL connection state
         ssl = create_ssl_connection(ctx, client_fd);
         // handle SSL connection
-        handle_ssl_connection(ssl, buffer);
+        handle_ssl_connection(ssl, buffer, iot);
         // close the SSL connection and free the context
         close_ssl_connection(ssl, ctx, client_fd);
         // close the server socket

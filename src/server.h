@@ -51,6 +51,8 @@
 #define SERVER_PORT 443
 #define BUFFER_SIZE 1024
 
+typedef void (*func_ptr)(void);
+
 /**
  * @brief  Runs an SSL/TLS server continuously.
  *
@@ -68,6 +70,6 @@
  *
  * @retval None
  */
-void run_server(void);
+void run_server(func_ptr iot);
 
 #endif // SERVER_H
