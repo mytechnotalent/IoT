@@ -29,6 +29,7 @@ sudo ./build_openocd.sh
 
 # Usage: Terminal 1
 ```bash
+export HOSTNAME="<YOUR_HOSTNAME>"
 export WIFI_SSID="<YOUR_WIFI_SSID>" WIFI_PASSWORD="<YOUR_WIFI_PASSWORD>"
 sudo nmcli device disconnect wlan0
 sudo nmcli device wifi hotspot ssid $WIFI_SSID password $WIFI_PASSWORD
