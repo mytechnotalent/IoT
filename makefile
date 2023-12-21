@@ -37,8 +37,8 @@ client:
 	cd $(CLIENT_BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=Debug -DWIFI_SSID="$$WIFI_SSID" -DWIFI_PASSWORD="$$WIFI_PASSWORD" $(TLS_CLIENT_DIR) && make
 
 flash-client:
+	echo "/media/$(USER_NAME)/RPI-RP2" \
 	@for i in $$(seq 1 10); do \
-		echo "/media/$(USER_NAME)/RPI-RP2" \
 		if [ -d "/media/$(USER_NAME)/RPI-RP2" ]; then \
 		echo "Flashing UF2..."; \
 			break; \
