@@ -38,6 +38,7 @@ client:
 
 flash-client:
 	@for i in $$(seq 1 10); do \
+		echo "/media/$(USER_NAME)/RPI-RP2" \
 		if [ -d "/media/$(USER_NAME)/RPI-RP2" ]; then \
 		echo "Flashing UF2..."; \
 			break; \
