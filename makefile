@@ -37,18 +37,17 @@ client:
 	cd $(CLIENT_BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=Debug -DWIFI_SSID="$$WIFI_SSID" -DWIFI_PASSWORD="$$WIFI_PASSWORD" $(TLS_CLIENT_DIR) && make
 
 flash-client:
-	echo "/media/$(USER_NAME)/RPI-RP2" \
 	@for i in $$(seq 1 10); do \
-		if [ -d "/media/$(USER_NAME)/RPI-RP2" ]; then \
+		if [ -d "/media/${USER_NAME}/RPI-RP2" ]; then \
 		echo "Flashing UF2..."; \
 			break; \
 		fi; \
 		sleep 1; \
 	done; \
-	if [ ! -d "/media/$(USER_NAME)/RPI-RP2" ]; then \
+	if [ ! -d "/media/${USER_NAME}/RPI-RP2" ]; then \
 		echo "Please put Pico W into boot mode!"; \
 	else \
-		sudo cp $(CLIENT_BUILD_DIR)/IoT.uf2 /media/$(USER_NAME)/RPI-RP2; \
+		sudo cp $(CLIENT_BUILD_DIR)/IoT.uf2 /media/${USER_NAME}/RPI-RP2; \
 	fi
 
 run-server:
