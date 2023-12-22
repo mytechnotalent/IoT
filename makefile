@@ -4,7 +4,7 @@ SSL_DIR = ssl
 TLS_CLIENT_DIR := $(CURDIR)/TLS_client
 CLIENT_BUILD_DIR := $(CURDIR)/TLS_client/build
 PICO_SDK_PATH := $(CURDIR)/../pico-sdk
-USER_NAME := $(USER_NAME)
+USER_NAME := "$$USER_NAME"
 
 clean-server:
 	rm -rf $(SERVER_BUILD_DIR)
