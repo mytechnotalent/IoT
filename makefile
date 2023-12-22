@@ -4,6 +4,7 @@ SSL_DIR = ssl
 TLS_CLIENT_DIR := $(CURDIR)/TLS_client
 CLIENT_BUILD_DIR := $(CURDIR)/TLS_client/build
 PICO_SDK_PATH := $(CURDIR)/../pico-sdk
+USER_NAME := $(USER_NAME)
 
 clean-server:
 	rm -rf $(SERVER_BUILD_DIR)
@@ -38,16 +39,16 @@ client:
 
 flash-client:
 	@for i in $$(seq 1 10); do \
-		if [ -d /media/"$$USER_NAME"/RPI-RP2 ]; then \
+		if [ -d /media/$(USER_NAME)/RPI-RP2 ]; then \
 		echo "Flashing UF2..."; \
 			break; \
 		fi; \
 		sleep 1; \
 	done; \
-	if [ ! -d /media/"$$USER_NAME"/RPI-RP2 ]; then \
+	if [ ! -d /media/$(USER_NAME)/RPI-RP2 ]; then \
 		echo "Please put Pico W into boot mode!"; \
 	else \
-		sudo cp $(CLIENT_BUILD_DIR)/IoT.uf2 /media/"$$USER_NAME"/RPI-RP2; \
+		sudo cp $(CLIENT_BUILD_DIR)/IoT.uf2 /media/$(USER_NAME)/RPI-RP2; \
 	fi
 
 run-server:
