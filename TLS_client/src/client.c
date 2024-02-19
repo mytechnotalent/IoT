@@ -368,7 +368,6 @@ static TLS_CLIENT_T* tls_client_init(void);
  */
 static bool run_tls_client_test(const uint8_t *cert, size_t cert_len, const char *server, const char *request);
 
-
 static err_t tls_client_close(void *arg)
 {
     TLS_CLIENT_T *state = (TLS_CLIENT_T*)arg;
@@ -542,4 +541,3 @@ void run_client(const char *TLS_CLIENT_SERVER, const char *TLS_CLIENT_HTTP_REQUE
         cyw43_arch_deinit();
     }
 }
-
