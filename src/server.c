@@ -229,6 +229,7 @@ static SSL *create_ssl_connection(SSL_CTX *ctx, int8_t client_fd) {
 
 static void handle_ssl_connection(SSL *ssl, char *buffer, func_ptr *func_ptrs) {
     printf("SSL connection established!\n");
+    
     // read data from the client
     uint64_t bytes_received = SSL_read(ssl, buffer, BUFFER_SIZE - 1);
     if (bytes_received <= 0) {
