@@ -237,6 +237,7 @@ static void handle_ssl_connection(SSL *ssl, char *buffer, func_ptr *func_ptrs) {
     }
     buffer[bytes_received] = '\0';  // null-terminate the received data
     printf("Received: %s\n", buffer);
+    
     // parse the HTTP request to check if it's a POST request
     const char *post_token = "POST /";
     if (strncmp(buffer, post_token, strlen(post_token)) == 0) {
@@ -311,14 +312,17 @@ void run_server(func_ptr *func_ptrs) {
     while (1) {
         // initialize SSL
         SSL_library_init();
+        
         // create and configure SSL context
         ctx = create_context();
         configure_context(ctx);
+        
         // get list of all network interfaces
         if (getifaddrs(&ifa_list) == -1) {
             perror("getifaddrs");
             exit(1);
         }
+        
         // find the wlan0 interface and use its address
         for (ifa = ifa_list; ifa; ifa = ifa->ifa_next) {
             if (ifa->ifa_addr && ifa->ifa_addr->sa_family == AF_INET && strcmp(ifa->ifa_name, "wlan0") == 0) {
@@ -326,31 +330,42 @@ void run_server(func_ptr *func_ptrs) {
                 break;
             }
         }
+        
         // free the list of interfaces
         freeifaddrs(ifa_list);
+        
         // check if wlan0 was found
         if (!ifa) {
             printf("Error: wlan0 interface not found!\r\n");
             exit(1);
         }
+        
         // create socket
         server_fd = create_socket();
+        
         // set up server address struct
         server_addr.sin_family = AF_INET;
         server_addr.sin_port = htons(SERVER_PORT);
+        
         // bind the socket to wlan0
         bind_socket(server_fd, &server_addr);
+        
         // listen for incoming connections
         listen_for_connections(server_fd);
         printf("Server listening on port %d (wlan0)...\r\n", SERVER_PORT);
+        
         // accept incoming connections
         client_fd = accept_connection(server_fd, &server_addr, &addr_len);
+        
         // create new SSL connection state
         ssl = create_ssl_connection(ctx, client_fd);
+        
         // handle SSL connection
         handle_ssl_connection(ssl, buffer, func_ptrs);
+        
         // close the SSL connection and free the context
         close_ssl_connection(ssl, ctx, client_fd);
+        
         // close the server socket
         close(server_fd);
     }
