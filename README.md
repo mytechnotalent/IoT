@@ -48,9 +48,5 @@ make open-terminal
 
 <br>
 
-## UNDER DEVELOPMENT STANDBY...
-
-<br>
-
 ## License
 [MIT](https://raw.githubusercontent.com/mytechnotalent/IoT/main/LICENSE)
